@@ -26,8 +26,13 @@ public class SomeJobClass(IHybridCacheService cache, ISomeOtherService service)
     private readonly IHybridCacheService _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     private readonly ISomeOtherService _service = service ?? throw new ArgumentNullException(nameof(service));
     
-    public async Task<SomeJobResponse> DoSomeJobMethod() => 
+    // Async version
+    public async Task<SomeJobResponse> DoSomeJobMethodAsync() => 
         // provide cache key and the factory function to execute when cache is expired or null
-        await _cache.GetOrSetAsync<SomeJobResponse>("_cache_key_name", async () => await _service.GetJobStatusResponse());
+        await _cache.GetOrSetAsync<SomeJobResponse>("_cache_key_name", _service.GetJobStatusResponseAsync()) ?? new SomeJobResponse();
+    
+    // non Async version
+    public SomeJobResponse DoSomeJobMethod() =>
+        _cache.GetOrSet<SomeJobResponse>("_cache_key_name", _service.GetJobStatusResponse()) ?? new SomeJobResponse();
 }
 ```

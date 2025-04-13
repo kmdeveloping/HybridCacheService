@@ -6,13 +6,13 @@ namespace HybridCache.Extensions;
 
 public static class HybridCacheExtensions
 {
-    public static void AddHybridCache(this IServiceCollection services, IOptions<HybridCacheConfiguration>? options = null)
+    public static void AddHybridCache(this IServiceCollection services, IOptions<HybridCacheOptions>? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         if (options is null)
         {
-            var defaultOptions = new HybridCacheConfiguration
+            var defaultOptions = new HybridCacheOptions
             {
                 RedisDistributedCacheEnabled = false,
                 MemoryCacheDuration = TimeSpan.FromMinutes(5),
@@ -20,10 +20,10 @@ public static class HybridCacheExtensions
                 DefaultSlidingExpiration = TimeSpan.FromSeconds(30)
             };
             
-            options = new OptionsWrapper<HybridCacheConfiguration>(defaultOptions);
+            options = new OptionsWrapper<HybridCacheOptions>(defaultOptions);
         }
         
-        services.AddSingleton<HybridCacheConfiguration>(options.Value);
+        services.AddSingleton<HybridCacheOptions>(options.Value);
         
         if (!options.Value.RedisDistributedCacheEnabled)
             services.AddDistributedMemoryCache();
