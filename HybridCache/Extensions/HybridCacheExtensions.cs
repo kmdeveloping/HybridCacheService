@@ -33,5 +33,7 @@ public static class HybridCacheExtensions
                 opt.Configuration = options.Value.RedisDistributedCacheConnectionString;
                 opt.InstanceName = options.Value.RedisDistributedCacheInstanceName;
             });
+
+        services.AddSingleton<IHybridCacheService, HybridCacheService>();
     }
 }
