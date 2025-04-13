@@ -1,6 +1,6 @@
 namespace HybridCache.Configuration;
 
-public class HybridCacheConfiguration
+public class HybridCacheOptions
 {
     public bool RedisDistributedCacheEnabled { get; set; }
     public TimeSpan? MemoryCacheDuration { get; set; }
