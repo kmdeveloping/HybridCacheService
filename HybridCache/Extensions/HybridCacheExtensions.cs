@@ -6,7 +6,7 @@ namespace HybridCache.Extensions;
 
 public static class HybridCacheExtensions
 {
-    public static void AddHybridCache(this IServiceCollection services, IOptions<HybridCacheOptions>? options = null)
+    public static void AddHybridCacheService(this IServiceCollection services, IOptions<HybridCacheOptions>? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
