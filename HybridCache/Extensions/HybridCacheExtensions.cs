@@ -1,37 +1,27 @@
 using HybridCache.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace HybridCache.Extensions;
 
 public static class HybridCacheExtensions
 {
-    public static void AddHybridCacheService(this IServiceCollection services, IOptions<HybridCacheOptions>? options = null)
+    public static void AddHybridCacheService(this IServiceCollection services, Action<HybridCacheOptions> configureOptions)
     {
         ArgumentNullException.ThrowIfNull(services);
-
-        if (options is null)
-        {
-            var defaultOptions = new HybridCacheOptions
-            {
-                RedisDistributedCacheEnabled = false,
-                MemoryCacheDuration = TimeSpan.FromMinutes(5),
-                DistributedCacheDuration = TimeSpan.FromMinutes(10),
-                DefaultSlidingExpiration = TimeSpan.FromSeconds(30)
-            };
-            
-            options = new OptionsWrapper<HybridCacheOptions>(defaultOptions);
-        }
+        ArgumentNullException.ThrowIfNull(configureOptions);
         
-        services.AddSingleton<HybridCacheOptions>(options.Value);
+        var options = new HybridCacheOptions();
+        configureOptions.Invoke(options);
         
-        if (!options.Value.RedisDistributedCacheEnabled)
+        services.AddSingleton<HybridCacheOptions>(options);
+        
+        if (!options.RedisCacheOptions.RedisDistributedCacheEnabled)
             services.AddDistributedMemoryCache();
         else
             services.AddStackExchangeRedisCache(opt =>
             {
-                opt.Configuration = options.Value.RedisDistributedCacheConnectionString;
-                opt.InstanceName = options.Value.RedisDistributedCacheInstanceName;
+                opt.Configuration = options.RedisCacheOptions.RedisDistributedCacheConnectionString;
+                opt.InstanceName = options.RedisCacheOptions.RedisDistributedCacheInstanceName;
             });
 
         services.AddSingleton<IHybridCacheService, HybridCacheService>();

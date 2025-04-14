@@ -10,9 +10,10 @@ public class HybridCacheService(HybridCacheOptions options, IMemoryCache memoryC
     private readonly IMemoryCache _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
     private readonly IDistributedCache _distributedCache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
     
-    private readonly TimeSpan _memoryDuration = options.MemoryCacheDuration ?? TimeSpan.FromMinutes(1);
-    private readonly TimeSpan _redisDuration = options.DistributedCacheDuration ?? TimeSpan.FromMinutes(10);
-    private readonly TimeSpan _defaultSlidingExpiration = options.DefaultSlidingExpiration ?? TimeSpan.FromSeconds(30);
+    private readonly TimeSpan _memoryDuration = options.MemoryCacheDuration ?? TimeSpan.FromMinutes(10);
+    private readonly TimeSpan _defaultMemorySlidingExpiration = options.DefaultMemorySlidingExpiration ?? TimeSpan.FromMinutes(2);
+    private readonly TimeSpan _redisDuration = options.DistributedCacheDuration ?? TimeSpan.FromHours(2);
+    private readonly TimeSpan _defaultDistributedSlidingExpiration = options.DefaultDistributedSlidingExpiration ?? TimeSpan.FromMinutes(30);
 
     public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> service) where T : class
     {
@@ -64,7 +65,7 @@ public class HybridCacheService(HybridCacheOptions options, IMemoryCache memoryC
         new MemoryCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = _memoryDuration,
-            SlidingExpiration = _defaultSlidingExpiration,
+            SlidingExpiration = _defaultMemorySlidingExpiration,
             Priority = CacheItemPriority.Normal
         };
 
@@ -72,6 +73,6 @@ public class HybridCacheService(HybridCacheOptions options, IMemoryCache memoryC
         new DistributedCacheEntryOptions 
         {
             AbsoluteExpirationRelativeToNow = _redisDuration,
-            SlidingExpiration = _defaultSlidingExpiration
+            SlidingExpiration = _defaultDistributedSlidingExpiration
          };
 }
