@@ -61,15 +61,17 @@ public class HybridCacheService(HybridCacheOptions options, IMemoryCache memoryC
         return value;
     }
 
-    public async Task StoreHandledException<T>(string key, T exception, double ttl = 7) where T : Exception
+    public async Task StoreHandledExceptionAsync<T>(string key, T exception, TimeSpan? ttl = null) where T : Exception
     {
-        var serialized = JsonSerializer.Serialize(exception);
+        var serialized = JsonSerializer.Serialize(new { ExceptionMessage = exception.Message, InnerExceptionMessage = exception.InnerException?.Message, ExceptionStackTrace = exception.StackTrace });
         await _distributedCache.SetStringAsync(key, serialized, new DistributedCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(ttl)
+            AbsoluteExpirationRelativeToNow = ttl ?? TimeSpan.FromDays(7)
         });
     }
 
+    public async Task<string?> GetStoredExceptionAsync(string key) => await _distributedCache.GetStringAsync(key);
+    
     private MemoryCacheEntryOptions GetDefaultMemoryCacheEntryOptions() => 
         new MemoryCacheEntryOptions
         {
