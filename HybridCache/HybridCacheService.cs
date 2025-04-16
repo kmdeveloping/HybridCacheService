@@ -9,6 +9,7 @@ public interface IHybridCacheService
 {
     Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> service) where T : class;
     T? GetOrSet<T>(string key, Func<T> service) where T : class;
+    Task StoreHandledException<T>(string key, T exception, double ttl = 7) where T : Exception;
 }
 
 public class HybridCacheService(HybridCacheOptions options, IMemoryCache memoryCache, IDistributedCache distributedCache) : IHybridCacheService
@@ -65,6 +66,15 @@ public class HybridCacheService(HybridCacheOptions options, IMemoryCache memoryC
         _distributedCache.SetString(key, serialized, GetDefaultDistributedCacheEntryOptions());
         
         return value;
+    }
+
+    public async Task StoreHandledException<T>(string key, T exception, double ttl = 7) where T : Exception
+    {
+        var serialized = JsonSerializer.Serialize(exception);
+        await _distributedCache.SetStringAsync(key, serialized, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(ttl)
+        });
     }
 
     private MemoryCacheEntryOptions GetDefaultMemoryCacheEntryOptions() => 
