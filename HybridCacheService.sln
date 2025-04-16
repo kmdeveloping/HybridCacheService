@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybridCache", "HybridCache\HybridCache.csproj", "{80F59E22-992B-49FA-94DB-F59587116AAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybridCache.UnitTests", "HybridCache.UnitTests\HybridCache.UnitTests.csproj", "{A6A85CCC-54CA-43E5-9748-689702E31E47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{80F59E22-992B-49FA-94DB-F59587116AAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80F59E22-992B-49FA-94DB-F59587116AAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80F59E22-992B-49FA-94DB-F59587116AAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6A85CCC-54CA-43E5-9748-689702E31E47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6A85CCC-54CA-43E5-9748-689702E31E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6A85CCC-54CA-43E5-9748-689702E31E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6A85CCC-54CA-43E5-9748-689702E31E47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
