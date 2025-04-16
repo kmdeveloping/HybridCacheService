@@ -11,12 +11,18 @@ dotnet add package HybridCache
 ```csharp
 builder.Services.AddHybridCache(opt => 
 {
-    opt.RedisDistributedCacheEnabled = true;
-    opt.RedisDistributedCacheConnectionString = builder.Configuration.GetConnectionString("Redis_Connection_String_Key_Name") ?? throw new ArgumentNullException(nameof(builder.Configuration), "Redis Connection Uri is missing");
-    opt.RedisDistributedCacheInstanceName = builder.Configuration["Redis:ConfigSection:InstanceName"] ?? throw new ArgumentNullException(nameof(builder.Configuration), "Redis InstanceName is missing");
-    opt.MemoryCacheDuration = TimeSpan.FromMinutes(2);
-    opt.DistributedCacheDuration = TimeSpan.FromMinutes(10);
-    opt.DefaultSlidingExpiration = TimeSpan.FromSeconds(30);
+    opt.RedisCacheOptions = new RedisCacheOptions 
+    {
+        RedisDistributedCacheEnabled = true;
+        RedisDistributedCacheConnectionString = builder.Configuration.GetConnectionString("Redis_Connection_String_Key_Name") ?? throw new ArgumentNullException(nameof(builder.Configuration), "Redis Connection Uri is missing");
+        RedisDistributedCacheInstanceName = builder.Configuration["Redis:ConfigSection:InstanceName"] ?? throw new ArgumentNullException(nameof(builder.Configuration), "Redis InstanceName is missing");
+    };
+    
+    opt.MemoryCacheDuration = TimeSpan.FromMinutes(5);
+    opt.DefaultMemorySlidingExpiration = TimeSpan.FromMinutes(1);
+    
+    opt.DistributedCacheDuration = TimeSpan.FromHours(2);
+    opt.DefaultDistributedSlidingExpiration = TimeSpan.FromMinutes(30);
 });
 ```
 
@@ -29,10 +35,10 @@ public class SomeJobClass(IHybridCacheService cache, ISomeOtherService service)
     // Async version
     public async Task<SomeJobResponse> DoSomeJobMethodAsync() => 
         // provide cache key and the factory function to execute when cache is expired or null
-        await _cache.GetOrSetAsync<SomeJobResponse>("_cache_key_name", _service.GetJobStatusResponseAsync()) ?? new SomeJobResponse();
+        await _cache.GetOrSetAsync<SomeJobResponse>("_cache_key_name", async () => await _service.GetJobStatusResponseAsync()) ?? new SomeJobResponse();
     
     // non Async version
     public SomeJobResponse DoSomeJobMethod() =>
-        _cache.GetOrSet<SomeJobResponse>("_cache_key_name", _service.GetJobStatusResponse()) ?? new SomeJobResponse();
+        _cache.GetOrSet<SomeJobResponse>("_cache_key_name", () => _service.GetJobStatusResponse()) ?? new SomeJobResponse();
 }
 ```
