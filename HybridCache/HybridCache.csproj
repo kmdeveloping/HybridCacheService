@@ -4,8 +4,8 @@
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>HybridCache</PackageId>
-    <Version>1.0.2</Version>
+    <PackageId>Krache</PackageId>
+    <Version>1.0.3</Version>
     <Authors>Kevin Mollencopf</Authors>
     <Company>Kozio.io</Company>
     <Description>A hybrid in-memory and Redis cache for .NET 8+ using primary constructor syntax.</Description>
